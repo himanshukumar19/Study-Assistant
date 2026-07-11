@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import TextInput from "./components/TextInput.jsx";
 import ModeSelector from "./components/ModeSelector.jsx";
+import FlashcardSection from "./components/FlashcardSection.jsx";
 import { MODE_IDS } from "./constants.js";
 import { useRequestLifecycle } from "./hooks/useRequestLifecycle.js";
 import { generateStudySet } from "./services/generate.js";
@@ -133,29 +134,37 @@ export default function App() {
       )}
 
       {state.status === "success" && state.data && (
-        <div className="result-card result-card--success">
-          <p className="result-card__title">
-            {state.data.length} item{state.data.length !== 1 ? "s" : ""}{" "}
-            generated
-          </p>
-          {droppedCount > 0 && (
-            <p className="result-card__dropped">
-              {droppedCount} invalid item{droppedCount !== 1 ? "s" : ""} skipped
-            </p>
+        <>
+          {mode === "flashcards" ? (
+            <FlashcardSection
+              items={state.data.filter((i) => i.type === "flashcard")}
+            />
+          ) : (
+            <div className="result-card result-card--success">
+              <p className="result-card__title">
+                {state.data.length} item{state.data.length !== 1 ? "s" : ""}{" "}
+                generated
+              </p>
+              {droppedCount > 0 && (
+                <p className="result-card__dropped">
+                  {droppedCount} invalid item{droppedCount !== 1 ? "s" : ""} skipped
+                </p>
+              )}
+              <pre className="result-card__raw">{JSON.stringify(state.data, null, 2)}</pre>
+              <button
+                type="button"
+                className="result-card__action"
+                onClick={() => {
+                  reset();
+                  setText("");
+                  setDroppedCount(0);
+                }}
+              >
+                Generate new set
+              </button>
+            </div>
           )}
-          <pre className="result-card__raw">{JSON.stringify(state.data, null, 2)}</pre>
-          <button
-            type="button"
-            className="result-card__action"
-            onClick={() => {
-              reset();
-              setText("");
-              setDroppedCount(0);
-            }}
-          >
-            Generate new set
-          </button>
-        </div>
+        </>
       )}
     </main>
   );
