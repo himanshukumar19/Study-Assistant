@@ -239,6 +239,25 @@
   font-family: var(--font-body);
   font-size: var(--text-sm);
   color: var(--color-pencil);
+  line-height: 1.6;
+}
+
+.result-card__details {
+  width: 100%;
+  margin-top: var(--space-xs);
+}
+
+.result-card__details-summary {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-pencil);
+  cursor: pointer;
+  user-select: none;
+  padding: var(--space-xs) 0;
+
+  &:hover {
+    color: var(--color-ink);
+  }
 }
 
 .result-card__error-detail {
@@ -251,9 +270,19 @@
   text-align: left;
   white-space: pre-wrap;
   word-break: break-word;
-  margin-bottom: var(--space-md);
-  max-height: 180px;
+  margin-top: var(--space-xs);
+  margin-bottom: 0;
+  max-height: 120px;
   overflow-y: auto;
+}
+
+.result-card__actions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+  width: 100%;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .result-card__raw {
@@ -292,6 +321,17 @@
 
   &:hover {
     background: var(--color-slate-blue-hover);
+  }
+}
+
+.result-card__action--secondary {
+  background: transparent;
+  color: var(--color-pencil);
+  border: 1px solid var(--color-pale-slate);
+
+  &:hover {
+    background: var(--color-pale-slate);
+    color: var(--color-ink);
   }
 }
 

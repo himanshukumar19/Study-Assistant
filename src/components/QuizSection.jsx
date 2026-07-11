@@ -37,11 +37,11 @@ export default function QuizSection({ items, onComplete }) {
   const allAnswered = entries.every((e) => e.status !== "unanswered");
 
   useEffect(() => {
-    if (allAnswered && !wasAnsweredRef.current && onComplete) {
+    if (totalCount > 0 && allAnswered && !wasAnsweredRef.current && onComplete) {
       onComplete();
     }
     wasAnsweredRef.current = allAnswered;
-  }, [allAnswered, onComplete]);
+  }, [allAnswered, onComplete, totalCount]);
   const answeredCount = entries.filter((e) => e.status !== "unanswered").length;
   const item = currentEntry ? currentEntry.item : null;
   const isCorrect = currentEntry ? selectedIndex === currentEntry.item.correctIndex : false;

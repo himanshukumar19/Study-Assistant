@@ -39,11 +39,11 @@ export default function FlashcardSection({ items, onComplete }) {
   const allSeen = unseenLeft === 0;
 
   useEffect(() => {
-    if (allSeen && !wasAllSeenRef.current && onComplete) {
+    if (totalCount > 0 && allSeen && !wasAllSeenRef.current && onComplete) {
       onComplete();
     }
     wasAllSeenRef.current = allSeen;
-  }, [allSeen, onComplete]);
+  }, [allSeen, onComplete, totalCount]);
 
   useEffect(() => {
     return () => {

@@ -7,6 +7,7 @@ import { useReducer, useCallback, useRef } from "react";
  * @property {RequestStatus} status
  * @property {import("../services/schema.js").StudyItem[] | null} data
  * @property {string | null} error
+ * @property {string | null} errorCode
  * @property {number} requestId — monotonically increasing token
  */
 
@@ -19,7 +20,7 @@ const ACTIONS = {
 
 /** @returns {RequestState} */
 function createInitialState() {
-  return { status: "idle", data: null, error: null, requestId: 0 };
+  return { status: "idle", data: null, error: null, errorCode: null, requestId: 0 };
 }
 
 function reducer(state, action) {
@@ -29,6 +30,7 @@ function reducer(state, action) {
         status: "loading",
         data: null,
         error: null,
+        errorCode: null,
         requestId: action.payload.requestId,
       };
     }
@@ -40,7 +42,13 @@ function reducer(state, action) {
 
     case ACTIONS.FETCH_ERROR: {
       if (action.payload.requestId !== state.requestId) return state;
-      return { ...state, status: "error", error: action.payload.error, data: null };
+      return {
+        ...state,
+        status: "error",
+        error: action.payload.error,
+        errorCode: action.payload.errorCode || null,
+        data: null,
+      };
     }
 
     case ACTIONS.RESET: {
@@ -70,7 +78,7 @@ function reducer(state, action) {
  *   state: RequestState,
  *   fetchStart: () => number,
  *   fetchSuccess: (data: import("../services/schema.js").StudyItem[], requestId: number) => void,
- *   fetchError: (error: string, requestId: number) => void,
+ *   fetchError: (error: string, requestId: number, errorCode?: string) => void,
  *   reset: () => void,
  * }}
  */
@@ -97,8 +105,11 @@ export function useRequestLifecycle() {
 
   const fetchError = useCallback(
     /** @param {string} error */
-    (error, requestId) => {
-      dispatch({ type: ACTIONS.FETCH_ERROR, payload: { error, requestId } });
+    (error, requestId, errorCode) => {
+      dispatch({
+        type: ACTIONS.FETCH_ERROR,
+        payload: { error, requestId, errorCode: errorCode || null },
+      });
     },
     []
   );
