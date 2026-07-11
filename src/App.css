@@ -108,6 +108,7 @@
   font-size: var(--text-sm);
   font-weight: 500;
   padding: var(--space-sm) var(--space-md);
+  min-height: 44px;
   border-radius: var(--radius-full);
   border: 2px solid var(--color-pale-slate);
   color: var(--color-pencil);
@@ -316,11 +317,16 @@
   border: none;
   border-radius: var(--radius-full);
   padding: var(--space-sm) var(--space-lg);
+  min-height: 44px;
   transition: background var(--transition-fast);
   cursor: pointer;
 
   &:hover {
     background: var(--color-slate-blue-hover);
+  }
+
+  &:focus-visible {
+    box-shadow: var(--shadow-focus);
   }
 }
 
@@ -332,6 +338,10 @@
   &:hover {
     background: var(--color-pale-slate);
     color: var(--color-ink);
+  }
+
+  &:focus-visible {
+    box-shadow: var(--shadow-focus);
   }
 }
 
@@ -474,10 +484,15 @@
   font-size: var(--text-sm);
   font-weight: 500;
   padding: var(--space-sm) var(--space-md);
+  min-height: 44px;
   border-radius: var(--radius-full);
   border: none;
   cursor: pointer;
   transition: background var(--transition-fast);
+
+  &:focus-visible {
+    box-shadow: var(--shadow-focus);
+  }
 }
 
 .flashcard-section__action--known {
@@ -723,6 +738,7 @@
   border: none;
   border-radius: var(--radius-full);
   padding: var(--space-md) var(--space-xl);
+  min-height: 44px;
   width: 100%;
   cursor: pointer;
   transition: background var(--transition-fast), opacity var(--transition-fast);
@@ -734,6 +750,10 @@
   &:disabled {
     opacity: 0.45;
     cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    box-shadow: var(--shadow-focus);
   }
 }
 
@@ -798,12 +818,17 @@
   border: none;
   border-radius: var(--radius-full);
   padding: var(--space-sm) var(--space-xl);
+  min-height: 44px;
   width: 100%;
   cursor: pointer;
   transition: background var(--transition-fast);
 
   &:hover {
     background: var(--color-slate-blue-hover);
+  }
+
+  &:focus-visible {
+    box-shadow: var(--shadow-focus);
   }
 }
 
@@ -835,11 +860,16 @@
   border: none;
   border-radius: var(--radius-full);
   padding: var(--space-sm) var(--space-lg);
+  min-height: 44px;
   cursor: pointer;
   transition: background var(--transition-fast);
 
   &:hover {
     background: var(--color-rose-hover);
+  }
+
+  &:focus-visible {
+    box-shadow: var(--shadow-focus);
   }
 }
 
@@ -932,11 +962,16 @@
   border: none;
   border-radius: var(--radius-full);
   padding: var(--space-sm) var(--space-lg);
+  min-height: 44px;
   cursor: pointer;
   transition: background var(--transition-fast);
 
   &:hover {
     background: var(--color-slate-blue-hover);
+  }
+
+  &:focus-visible {
+    box-shadow: var(--shadow-focus);
   }
 }
 
