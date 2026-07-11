@@ -3,9 +3,11 @@
 ## Commands
 
 ```bash
-npm start          # dev server (Vite) — assignment requires this name, not `npm run dev`
+npm start          # runs both backend (Express :3001) and frontend (Vite :5173) via concurrently
+npm run start:backend  # Express proxy only (loads .env via --env-file)
+npm run start:frontend # Vite dev server only
 npm run build      # production build
-npm run lint       # ESLint (flat config)
+npm run lint       # ESLint (flat config — browser globals for src/, node globals for backend/)
 npm run preview    # preview production build
 ```
 
@@ -13,7 +15,7 @@ npm run preview    # preview production build
 
 - **Frontend**: React 19, Vite 8, vanilla JS (no TypeScript), plain CSS
 - **No TypeScript** — use JSDoc for type annotations
-- **Backend proxy**: planned but not yet implemented (see `backend/` directory — holds the API key, never exposed to browser)
+- **Backend proxy**: Express on port 3001, loaded via `node --env-file=.env backend/server.js`. Vite proxies `/api` to it in dev.
 - **AI Providers**: Cerebras API (primary, OpenAI-compatible endpoint), Google Gemini (fallback)
 - **State**: `useReducer` for flashcard/quiz pools, `useState` for simple UI flags; no external state library
 
@@ -39,7 +41,7 @@ Two **sequential sections** (not interleaved): all flashcards first, then quiz. 
 - Each quiz question has status: `unanswered | correct | incorrect`, plus a retest queue
 
 ### API Key Security
-API keys must never reach the browser. Route all LLM calls through a backend proxy (the `backend/` directory — currently empty scaffold).
+API keys must never reach the browser. Route all LLM calls through a backend proxy (the `backend/` directory).
 
 ## Locked Decisions — do not re-derive or silently change these 
 - Modes: Flashcards, Quiz, Mixed. Mixed = two sequential sections (all flashcards, then the quiz) — never interleaved.
@@ -83,7 +85,10 @@ src/
   hooks/            # custom hooks (currently empty)
   services/
     schema.js       # canonical AI response types (discriminated union)
-backend/            # proxy server (currently empty)
+    generate.js     # frontend fetch wrapper for /api/generate
+backend/
+  server.js         # Express server (port 3001), mounts POST /api/generate
+  generate.js       # route handler — calls Cerebras API, returns raw response
 docs/
   feature.md        # detailed feature plan & build phases — canonical spec
 ```
