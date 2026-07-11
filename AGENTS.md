@@ -86,6 +86,7 @@ src/
   services/
     schema.js       # canonical AI response types (discriminated union)
     generate.js     # frontend fetch wrapper for /api/generate
+    validateResponse.js # pure validator — 6 error cases, salvage policy
 backend/
   server.js         # Express server (port 3001), mounts POST /api/generate
   generate.js       # route handler — calls Cerebras API, returns raw response
