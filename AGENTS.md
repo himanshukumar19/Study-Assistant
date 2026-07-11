@@ -71,7 +71,8 @@ API keys must never reach the browser. Route all LLM calls through a backend pro
 ## File Layout
 ```
 src/
-  theme.css         # design tokens: colors, type scale, spacing, radius, shadows
+  styles/
+    theme.css         # design tokens: colors, type scale, spacing, radius, shadows
   index.css         # global styles, font imports, reset, reduced-motion guard
   App.jsx           # main app shell — composes TextInput + ModeSelector + Generate
   App.css           # component styles (BEM naming), animations
@@ -90,5 +91,6 @@ docs/
 ## Conventions
 - This is JavaScript, not TypeScript. Do not add `.ts`/`.tsx` files or TS syntax.
 - Use JSDoc `@typedef` for type documentation (see `schema.js` for existing pattern).
+- CSS: use `styles/theme.css` variables for all colors, type, spacing. Never hardcode values in component CSS.
 - ESLint flat config (`eslint.config.js`), ignores `dist/`.
 - No test framework configured yet — don't try to run `npm test`.
