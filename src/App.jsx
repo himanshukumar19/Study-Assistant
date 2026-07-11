@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import TextInput from "./components/TextInput.jsx";
 import ModeSelector from "./components/ModeSelector.jsx";
 import FlashcardSection from "./components/FlashcardSection.jsx";
+import QuizSection from "./components/QuizSection.jsx";
 import { MODE_IDS } from "./constants.js";
 import { useRequestLifecycle } from "./hooks/useRequestLifecycle.js";
 import { generateStudySet } from "./services/generate.js";
@@ -138,6 +139,10 @@ export default function App() {
           {mode === "flashcards" ? (
             <FlashcardSection
               items={state.data.filter((i) => i.type === "flashcard")}
+            />
+          ) : mode === "quiz" ? (
+            <QuizSection
+              items={state.data.filter((i) => i.type === "quiz")}
             />
           ) : (
             <div className="result-card result-card--success">

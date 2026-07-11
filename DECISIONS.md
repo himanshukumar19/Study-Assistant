@@ -47,6 +47,41 @@ proxy that holds the key server-side.
 `useReducer` + plain hooks, no external state library. Reason: scope of
 this app doesn't justify Redux/Zustand, and hooks-only is easier to
 explain and defend live in an interview.
+
+### Response validator salvage policy
+Salvage valid items from partially-valid arrays rather than rejecting
+the whole response. Reason: for a study tool, partial content is better
+than none — the student still gets usable flashcards/quizzes from a
+mostly-correct AI response. Reject only when zero items survive validation.
+
+### Stale-response guard
+Monotonically increasing `requestId` token stored in a ref (single
+source of truth). Each response carries its token; reducer compares
+against current `state.requestId` and discards if mismatched. Reason:
+prevents a slow, stale response from overwriting fresher data when
+the user fires multiple requests quickly.
+
+### FlashcardSection design
+CSS 3D flip (`rotateY(180deg)`) with `backface-visibility: hidden`.
+Two-face card inside a perspective container. "Got it" / "Review again"
+pill buttons with progress dots. Keyboard: Space/Enter to flip,
+arrow keys to navigate. `prefers-reduced-motion` skips JS setTimeout
+animation and CSS transitions degrade instantly.
+
+### QuizSection design
+Select-then-lock mechanic: user picks an option, then clicks "Lock in".
+Once locked, selection is permanent — options become disabled. Correct
+answer highlighted with checkmark icon + "Correct!" text. Incorrect
+shows cross icon + "Incorrect". Explanation reveals only after locking.
+No color-only distinction: paired with SVG icons and text labels per
+accessibility requirement.
+
+### Accessibility: no color-only distinction
+Both FlashcardSection and QuizSection use icons + text labels alongside
+color for correct/incorrect/known/review-again states. Reason: color
+blind users cannot distinguish states from color alone. Pattern:
+checkmark icon + "Correct!" label, cross icon + "Incorrect" label,
+"Got it" / "Review again" text buttons.
  
 ---
  
