@@ -82,7 +82,10 @@ src/
   components/
     TextInput.jsx   # textarea + character counter (4000 max)
     ModeSelector.jsx # pill buttons: Flashcards / Quiz / Mixed
-  hooks/            # custom hooks (currently empty)
+  hooks/
+    useQuizProgress.js      # quiz per-question status + retest queue
+    useFlashcardProgress.js # flashcard per-card status + review-again pool
+    useRequestLifecycle.js  # idle/loading/success/error + stale-response guard
   services/
     schema.js       # canonical AI response types (discriminated union)
     generate.js     # frontend fetch wrapper for /api/generate
