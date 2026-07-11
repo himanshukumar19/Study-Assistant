@@ -71,14 +71,20 @@ API keys must never reach the browser. Route all LLM calls through a backend pro
 ## File Layout
 ```
 src/
-  components/   # UI components (currently empty)
-  hooks/        # custom hooks (currently empty)
-  services/     # AI service, schema, validators
-  App.jsx       # currently Vite scaffold — will become main app shell
-  main.jsx      # React root mount
-backend/        # proxy server (currently empty)
+  theme.css         # design tokens: colors, type scale, spacing, radius, shadows
+  index.css         # global styles, font imports, reset, reduced-motion guard
+  App.jsx           # main app shell — composes TextInput + ModeSelector + Generate
+  App.css           # component styles (BEM naming), animations
+  constants.js      # shared constants (MODES array)
+  components/
+    TextInput.jsx   # textarea + character counter (4000 max)
+    ModeSelector.jsx # pill buttons: Flashcards / Quiz / Mixed
+  hooks/            # custom hooks (currently empty)
+  services/
+    schema.js       # canonical AI response types (discriminated union)
+backend/            # proxy server (currently empty)
 docs/
-  feature.md    # detailed feature plan & build phases — canonical spec
+  feature.md        # detailed feature plan & build phases — canonical spec
 ```
 
 ## Conventions
