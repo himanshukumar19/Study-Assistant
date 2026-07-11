@@ -3,9 +3,9 @@
 ## Commands
 
 ```bash
-npm start          # runs both backend (Express :3001) and frontend (Vite :5173) via concurrently
+npm start          # runs both backend (Express :3001) and frontend (Vite :5173) via concurrently. Vite runs with --host for local network access (mobile testing).
 npm run start:backend  # Express proxy only (loads .env via --env-file)
-npm run start:frontend # Vite dev server only
+npm run start:frontend # Vite dev server only (with --host)
 npm run build      # production build
 npm run lint       # ESLint (flat config — browser globals for src/, node globals for backend/)
 npm run preview    # preview production build
