@@ -11,13 +11,15 @@ app.use(express.json());
 
 if (process.env.VERCEL) {
   app.use(express.static(path.join(__dirname, "../dist")));
-
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../dist/index.html"));
-  });
 }
 
 app.post("/api/generate", generateHandler);
+
+if (process.env.VERCEL) {
+  app.get("/{*splat}", (req, res) => {
+    res.sendFile(path.join(__dirname, "../dist/index.html"));
+  });
+}
 
 if (!process.env.VERCEL) {
   app.listen(PORT, () => {
