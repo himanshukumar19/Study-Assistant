@@ -2,6 +2,12 @@
 
 AI-powered study tool that turns your notes into interactive flashcards, quizzes, or a mixed study set.
 
+**Live Demo:** [study-assistant-steel.vercel.app](https://study-assistant-steel.vercel.app)
+
+## Demo
+
+[Watch the Study Assistant Demo](./Study-Assistant-Demo.mov)
+
 ## Setup
 
 ```bash
