@@ -47,7 +47,7 @@ This project uses AI (Cerebras / Gemini) to generate structured study material f
 
 ## Time Spent
 
-~6 hours (scaffolding, design system, input/mode UI, schema, backend proxy, AGENTS.md)
+~8 hours (scaffolding, design system, input/mode UI, schema, backend proxy, response validator, reducers, AGENTS.md)
 
 ## License
 
