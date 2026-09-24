@@ -151,7 +151,7 @@
   animation: fadeUp 400ms ease 240ms both;
 
   &:hover:not(:disabled) {
-    background: #2a5575;
+    background: var(--color-slate-blue-hover);
     transform: translateY(-1px);
     box-shadow: var(--shadow-card-raised);
   }
