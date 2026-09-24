@@ -24,6 +24,8 @@ export default function QuizSection({ items, onComplete }) {
   const [isLocked, setIsLocked] = useState(false);
   const loadedRef = useRef(false);
   const wasAnsweredRef = useRef(false);
+  const optionRefs = useRef(/** @type {(HTMLButtonElement | null)[]} */ ([]));
+  const keyboardSelectRef = useRef(false);
 
   useEffect(() => {
     if (!loadedRef.current) {
@@ -31,6 +33,13 @@ export default function QuizSection({ items, onComplete }) {
       loadedRef.current = true;
     }
   }, [load]);
+
+  useEffect(() => {
+    if (keyboardSelectRef.current && selectedIndex !== null) {
+      optionRefs.current[selectedIndex]?.focus();
+      keyboardSelectRef.current = false;
+    }
+  }, [selectedIndex]);
 
   const entries = [...state.items.values()];
   const currentEntry = entries[currentIndex] || null;
@@ -49,6 +58,26 @@ export default function QuizSection({ items, onComplete }) {
   const handleSelect = (idx) => {
     if (isLocked) return;
     setSelectedIndex(idx);
+  };
+
+  const handleRadiogroupKeyDown = (e) => {
+    if (isLocked) return;
+    const { key } = e;
+    if (key === "ArrowDown" || key === "ArrowRight") {
+      e.preventDefault();
+      keyboardSelectRef.current = true;
+      setSelectedIndex((prev) => {
+        if (prev === null) return 0;
+        return (prev + 1) % item.options.length;
+      });
+    } else if (key === "ArrowUp" || key === "ArrowLeft") {
+      e.preventDefault();
+      keyboardSelectRef.current = true;
+      setSelectedIndex((prev) => {
+        if (prev === null) return item.options.length - 1;
+        return (prev - 1 + item.options.length) % item.options.length;
+      });
+    }
   };
 
   const handleLock = () => {
@@ -129,7 +158,7 @@ export default function QuizSection({ items, onComplete }) {
         <div className="quiz-section__question-card">
           <p className="quiz-section__question-text">{item.question}</p>
 
-          <div className="quiz-section__options" role="radiogroup" aria-label="Answer options">
+          <div className="quiz-section__options" role="radiogroup" aria-label="Answer options" onKeyDown={handleRadiogroupKeyDown}>
             {item.options.map((option, idx) => {
               const isSelected = selectedIndex === idx;
               const isCorrectAnswer = idx === item.correctIndex;
@@ -160,6 +189,7 @@ export default function QuizSection({ items, onComplete }) {
                 <button
                   key={idx}
                   type="button"
+                  ref={(el) => { optionRefs.current[idx] = el; }}
                   className={optionClass}
                   role="radio"
                   aria-checked={isSelected}

@@ -165,6 +165,7 @@ export default function FlashcardSection({ items, onComplete }) {
             onClick={handleFlip}
             role="button"
             tabIndex={0}
+            aria-live="polite"
             aria-label={isFlipped ? "Card flipped — showing answer" : "Tap to reveal answer"}
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ") {
