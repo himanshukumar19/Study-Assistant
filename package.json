@@ -4,9 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "start": "concurrently -k \"node --env-file=.env backend/server.js\" \"vite\"",
+    "start": "concurrently -k \"node --env-file=.env backend/server.js\" \"vite --host\"",
     "start:backend": "node --env-file=.env backend/server.js",
-    "start:frontend": "vite",
+    "start:frontend": "vite --host",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"

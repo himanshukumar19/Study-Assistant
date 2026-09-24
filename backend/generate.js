@@ -47,8 +47,8 @@ const MODE_INSTRUCTIONS = {
 export default async function generateHandler(req, res) {
   const { text, mode } = req.body;
 
-  if (!text || typeof text !== "string" || !text.trim()) {
-    return res.status(400).json({ error: "Text input is required." });
+  if (!text || typeof text !== "string" || !text.trim() || text.length > 4000) {
+    return res.status(400).json({ error: "Text input is required and must not exceed 4000 characters." });
   }
 
   if (!mode || !MODE_INSTRUCTIONS[mode]) {
