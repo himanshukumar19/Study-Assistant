@@ -31,13 +31,15 @@ export default function MixedSection({ items, onReset }) {
       {phase === "flashcards" && flashcardItems.length === 0 && (
         <div className="mixed-section__empty">
           <p>No flashcards in this set.</p>
-          <button
-            type="button"
-            className="mixed-section__proceed-btn"
-            onClick={() => setPhase("quiz")}
-          >
-            Skip to quiz
-          </button>
+          {quizItems.length > 0 && (
+            <button
+              type="button"
+              className="mixed-section__proceed-btn"
+              onClick={() => setPhase("quiz")}
+            >
+              Skip to quiz
+            </button>
+          )}
         </div>
       )}
 

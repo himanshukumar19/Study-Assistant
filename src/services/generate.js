@@ -17,7 +17,10 @@ export async function generateStudySet({ text, mode, signal }) {
 
   if (!res.ok) {
     const body = await res.json().catch(() => null);
-    throw new Error(body?.error || `Request failed (${res.status}).`);
+    const err = new Error(body?.error || `Request failed (${res.status}).`);
+    err.httpStatus = res.status;
+    err.upstreamStatus = body?.upstreamStatus;
+    throw err;
   }
 
   const data = await res.json();

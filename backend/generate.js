@@ -37,7 +37,7 @@ Rules:
 const MODE_INSTRUCTIONS = {
   flashcards: "Generate only flashcard items (type: \"flashcard\").",
   quiz: "Generate only quiz items (type: \"quiz\").",
-  mixed: "Generate a mix of flashcard and quiz items in one response.",
+  mixed: "Generate exactly 5 flashcard items AND 5 quiz items — both types must be present. Never produce only one type.",
 };
 
 /**
@@ -88,7 +88,10 @@ export default async function generateHandler(req, res) {
     if (!response.ok) {
       const body = await response.text();
       console.error(`[cerebras] ${response.status}: ${body}`);
-      return res.status(502).json({ error: `Upstream error (${response.status}).` });
+      return res.status(502).json({
+        error: `Upstream error (${response.status}).`,
+        upstreamStatus: response.status,
+      });
     }
 
     const data = await response.json();

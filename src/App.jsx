@@ -8,6 +8,7 @@ import { MODE_IDS } from "./constants.js";
 import { useRequestLifecycle } from "./hooks/useRequestLifecycle.js";
 import { generateStudySet } from "./services/generate.js";
 import { validateResponse } from "./services/validateResponse.js";
+import { detectErrorCode, getErrorMessage } from "./services/errorCodes.js";
 import "./App.css";
 
 export default function App() {
@@ -48,18 +49,19 @@ export default function App() {
       if (result.success) {
         fetchSuccess(result.data.items, requestId);
       } else {
-        const rawSnippet = result.raw.slice(0, 300);
         fetchError(
-          `[${result.reason}] Validation failed.\n\nRaw response (truncated):\n${rawSnippet}`,
-          requestId
+          result.raw.slice(0, 300),
+          requestId,
+          result.reason
         );
       }
     } catch (err) {
       if (err instanceof DOMException && err.name === "AbortError") return;
-      fetchError(
-        err instanceof Error ? err.message : String(err),
-        requestId
-      );
+
+      const message = err instanceof Error ? err.message : String(err);
+      const upstreamStatus = err.upstreamStatus;
+      const code = detectErrorCode(message, upstreamStatus);
+      fetchError(message, requestId, code);
     }
   };
 
@@ -119,19 +121,43 @@ export default function App() {
         </div>
       )}
 
-      {state.status === "error" && (
-        <div className="result-card result-card--error" role="alert">
-          <p className="result-card__title">Something went wrong</p>
-          <pre className="result-card__error-detail">{state.error}</pre>
-          <button
-            type="button"
-            className="result-card__action"
-            onClick={reset}
-          >
-            Try again
-          </button>
-        </div>
-      )}
+      {state.status === "error" && (() => {
+        const msg = getErrorMessage(state.errorCode);
+        return (
+          <div className="result-card result-card--error" role="alert">
+            <p className="result-card__title">{msg.title}</p>
+            <p className="result-card__text">{msg.description}</p>
+            {state.error && (
+              <details className="result-card__details">
+                <summary className="result-card__details-summary">
+                  Technical details
+                </summary>
+                <pre className="result-card__error-detail">{state.error}</pre>
+              </details>
+            )}
+            <div className="result-card__actions">
+              <button
+                type="button"
+                className="result-card__action"
+                onClick={handleGenerate}
+                disabled={!text.trim()}
+              >
+                {msg.retryLabel}
+              </button>
+              <button
+                type="button"
+                className="result-card__action result-card__action--secondary"
+                onClick={() => {
+                  reset();
+                  setText("");
+                }}
+              >
+                Start over
+              </button>
+            </div>
+          </div>
+        );
+      })()}
 
       {state.status === "success" && state.data && (
         <>

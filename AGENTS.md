@@ -65,7 +65,7 @@ API keys must never reach the browser. Route all LLM calls through a backend pro
 
 ## Assignment Requirements (Verbatim from `docs/feature.md`)
 - `npm install && npm start` must work end-to-end
-- Readme must include: setup, AI-usage note, known limitations, time spent
+- Readme must include: setup, AI-usage note, known limitations
 - `.env.example` is the canonical env reference; never commit real keys
 - Must work on mobile
 - Loading, error, empty states for every interactive path
@@ -84,6 +84,7 @@ src/
     ModeSelector.jsx # pill buttons: Flashcards / Quiz / Mixed
     FlashcardSection.jsx # interactive flip cards with progress + review-again
     QuizSection.jsx      # multiple-choice quiz with lock-in + retest
+    MixedSection.jsx     # composes FlashcardSection → QuizSection sequentially
   hooks/
     useQuizProgress.js      # quiz per-question status + retest queue
     useFlashcardProgress.js # flashcard per-card status + review-again pool
@@ -92,6 +93,7 @@ src/
     schema.js       # canonical AI response types (discriminated union)
     generate.js     # frontend fetch wrapper for /api/generate
     validateResponse.js # pure validator — 6 error cases, salvage policy
+    errorCodes.js   # error code constants, user-friendly messages, detection helper
 backend/
   server.js         # Express server (port 3001), mounts POST /api/generate
   generate.js       # route handler — calls Cerebras API, returns raw response
