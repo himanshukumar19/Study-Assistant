@@ -4,8 +4,9 @@ import { useFlashcardProgress } from "../hooks/useFlashcardProgress.js";
 /**
  * @param {Object} props
  * @param {import("../services/schema.js").FlashcardItem[]} props.items
+ * @param {() => void} [props.onComplete]
  */
-export default function FlashcardSection({ items }) {
+export default function FlashcardSection({ items, onComplete }) {
   const {
     state,
     load,
@@ -23,6 +24,7 @@ export default function FlashcardSection({ items }) {
   const prefersReducedMotion = useRef(false);
   const advanceTimerRef = useRef(/** @type {number | null} */ (null));
   const loadedRef = useRef(false);
+  const wasAllSeenRef = useRef(false);
 
   useEffect(() => {
     if (!loadedRef.current) {
@@ -30,6 +32,18 @@ export default function FlashcardSection({ items }) {
       loadedRef.current = true;
     }
   }, [load]);
+
+  const entries = [...state.items.values()];
+  const currentEntry = entries[currentIndex];
+  const unseenLeft = entries.filter((e) => e.status === "unseen").length;
+  const allSeen = unseenLeft === 0;
+
+  useEffect(() => {
+    if (allSeen && !wasAllSeenRef.current && onComplete) {
+      onComplete();
+    }
+    wasAllSeenRef.current = allSeen;
+  }, [allSeen, onComplete]);
 
   useEffect(() => {
     return () => {
@@ -48,11 +62,6 @@ export default function FlashcardSection({ items }) {
     mql.addEventListener("change", handler);
     return () => mql.removeEventListener("change", handler);
   }, []);
-
-  const entries = [...state.items.values()];
-  const currentEntry = entries[currentIndex];
-  const unseenLeft = entries.filter((e) => e.status === "unseen").length;
-  const allSeen = unseenLeft === 0;
 
   const advance = useCallback(() => {
     setIsExiting(true);

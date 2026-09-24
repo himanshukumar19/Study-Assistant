@@ -4,8 +4,9 @@ import { useQuizProgress } from "../hooks/useQuizProgress.js";
 /**
  * @param {Object} props
  * @param {import("../services/schema.js").QuizItem[]} props.items
+ * @param {() => void} [props.onComplete]
  */
-export default function QuizSection({ items }) {
+export default function QuizSection({ items, onComplete }) {
   const {
     state,
     load,
@@ -22,6 +23,7 @@ export default function QuizSection({ items }) {
   );
   const [isLocked, setIsLocked] = useState(false);
   const loadedRef = useRef(false);
+  const wasAnsweredRef = useRef(false);
 
   useEffect(() => {
     if (!loadedRef.current) {
@@ -33,6 +35,13 @@ export default function QuizSection({ items }) {
   const entries = [...state.items.values()];
   const currentEntry = entries[currentIndex] || null;
   const allAnswered = entries.every((e) => e.status !== "unanswered");
+
+  useEffect(() => {
+    if (allAnswered && !wasAnsweredRef.current && onComplete) {
+      onComplete();
+    }
+    wasAnsweredRef.current = allAnswered;
+  }, [allAnswered, onComplete]);
   const answeredCount = entries.filter((e) => e.status !== "unanswered").length;
   const item = currentEntry ? currentEntry.item : null;
   const isCorrect = currentEntry ? selectedIndex === currentEntry.item.correctIndex : false;

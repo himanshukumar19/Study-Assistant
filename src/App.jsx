@@ -3,6 +3,7 @@ import TextInput from "./components/TextInput.jsx";
 import ModeSelector from "./components/ModeSelector.jsx";
 import FlashcardSection from "./components/FlashcardSection.jsx";
 import QuizSection from "./components/QuizSection.jsx";
+import MixedSection from "./components/MixedSection.jsx";
 import { MODE_IDS } from "./constants.js";
 import { useRequestLifecycle } from "./hooks/useRequestLifecycle.js";
 import { generateStudySet } from "./services/generate.js";
@@ -15,7 +16,6 @@ export default function App() {
   const { state, fetchStart, fetchSuccess, fetchError, reset } =
     useRequestLifecycle();
   const abortRef = useRef(/** @type {AbortController | null} */ (null));
-  const [droppedCount, setDroppedCount] = useState(0);
 
   useEffect(() => {
     return () => {
@@ -47,7 +47,6 @@ export default function App() {
 
       if (result.success) {
         fetchSuccess(result.data.items, requestId);
-        setDroppedCount(result.data.dropped);
       } else {
         const rawSnippet = result.raw.slice(0, 300);
         fetchError(
@@ -145,29 +144,13 @@ export default function App() {
               items={state.data.filter((i) => i.type === "quiz")}
             />
           ) : (
-            <div className="result-card result-card--success">
-              <p className="result-card__title">
-                {state.data.length} item{state.data.length !== 1 ? "s" : ""}{" "}
-                generated
-              </p>
-              {droppedCount > 0 && (
-                <p className="result-card__dropped">
-                  {droppedCount} invalid item{droppedCount !== 1 ? "s" : ""} skipped
-                </p>
-              )}
-              <pre className="result-card__raw">{JSON.stringify(state.data, null, 2)}</pre>
-              <button
-                type="button"
-                className="result-card__action"
-                onClick={() => {
-                  reset();
-                  setText("");
-                  setDroppedCount(0);
-                }}
-              >
-                Generate new set
-              </button>
-            </div>
+            <MixedSection
+              items={state.data}
+              onReset={() => {
+                reset();
+                setText("");
+              }}
+            />
           )}
         </>
       )}
