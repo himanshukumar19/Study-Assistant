@@ -9,7 +9,7 @@ npm install
 npm start
 ```
 
-Requires Node.js 18+. The app runs at `http://localhost:5173`.
+Requires Node.js 20+ (uses `--env-file` for `.env` loading). The app runs at `http://localhost:5173` (frontend) and `http://localhost:3001` (backend proxy).
 
 Create a `.env` file based on `.env.example` with your API keys:
 
@@ -28,6 +28,7 @@ GEMINI_API_KEY=your_key_here
 ## Tech Stack
 
 - React 19 + Vite 8
+- Express backend proxy (port 3001) — routes LLM calls, holds API keys server-side
 - Plain CSS with CSS custom properties
 - Cerebras API (primary) / Google Gemini (fallback)
 - No TypeScript — JSDoc for type annotations
@@ -38,7 +39,7 @@ This project uses AI (Cerebras / Gemini) to generate structured study material f
 
 ## Known Limitations
 
-- Backend proxy not yet implemented — API calls are not wired up
+- No Gemini fallback yet (Cerebras only)
 - No dark mode
 - No save/load sessions
 - No streaming response rendering
@@ -46,7 +47,7 @@ This project uses AI (Cerebras / Gemini) to generate structured study material f
 
 ## Time Spent
 
-~4 hours (scaffolding, design system, input/mode UI, schema, AGENTS.md)
+~6 hours (scaffolding, design system, input/mode UI, schema, backend proxy, AGENTS.md)
 
 ## License
 

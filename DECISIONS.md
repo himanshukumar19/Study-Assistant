@@ -34,9 +34,10 @@ significantly for limited benefit.
  
 ### AI provider
 Cerebras as primary provider (OpenAI-compatible endpoint, fast
-inference), Google Gemini as fallback. Exact Cerebras model name to be
-confirmed against their current public catalog before implementation —
-verify it supports structured/JSON output mode.
+inference), Google Gemini as fallback. Model: `gpt-oss-120b` — supports
+`response_format: { type: "json_object" }` for structured output. Note:
+this model uses reasoning tokens internally, so `max_completion_tokens`
+must be set high enough (8192) to leave room for actual output.
  
 ### API key handling
 Never exposed client-side. All provider calls go through a backend
