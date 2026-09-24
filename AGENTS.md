@@ -82,6 +82,8 @@ src/
   components/
     TextInput.jsx   # textarea + character counter (4000 max)
     ModeSelector.jsx # pill buttons: Flashcards / Quiz / Mixed
+    FlashcardSection.jsx # interactive flip cards with progress + review-again
+    QuizSection.jsx      # multiple-choice quiz with lock-in + retest
   hooks/
     useQuizProgress.js      # quiz per-question status + retest queue
     useFlashcardProgress.js # flashcard per-card status + review-again pool
