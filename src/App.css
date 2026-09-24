@@ -179,6 +179,122 @@
   transform: translateX(2px);
 }
 
+.generate-btn--loading {
+  opacity: 0.85;
+}
+
+.mode-selector[disabled] .mode-selector__btn {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--color-white);
+  border-top-color: transparent;
+  border-radius: var(--radius-full);
+  animation: spin 600ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.result-card {
+  width: 100%;
+  max-width: 600px;
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  text-align: center;
+  animation: fadeUp 300ms ease;
+}
+
+.result-card--loading {
+  background: var(--color-pale-slate);
+}
+
+.result-card--error {
+  background: var(--color-rose);
+  border: 1px solid #fca5a5;
+}
+
+.result-card--success {
+  background: var(--color-mint);
+  border: 1px solid #6ee7b7;
+}
+
+.result-card__title {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-bottom: var(--space-sm);
+}
+
+.result-card__text {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--color-pencil);
+}
+
+.result-card__error-detail {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-pencil);
+  background: var(--color-white);
+  padding: var(--space-sm);
+  border-radius: var(--radius-sm);
+  text-align: left;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin-bottom: var(--space-md);
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.result-card__raw {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-pencil);
+  background: var(--color-white);
+  padding: var(--space-md);
+  border-radius: var(--radius-sm);
+  text-align: left;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin-bottom: var(--space-md);
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.result-card__dropped {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-pencil);
+  margin-bottom: var(--space-sm);
+}
+
+.result-card__action {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-white);
+  background: var(--color-slate-blue);
+  border: none;
+  border-radius: var(--radius-full);
+  padding: var(--space-sm) var(--space-lg);
+  transition: background var(--transition-fast);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--color-slate-blue-hover);
+  }
+}
+
 @keyframes fadeUp {
   from {
     opacity: 0;
