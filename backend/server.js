@@ -16,8 +16,12 @@ if (process.env.VERCEL) {
 app.post("/api/generate", generateHandler);
 
 if (process.env.VERCEL) {
-  app.get("/{*splat}", (req, res) => {
-    res.sendFile(path.join(__dirname, "../dist/index.html"));
+  app.use((req, res, next) => {
+    if (req.method === "GET" && !req.path.startsWith("/api")) {
+      res.sendFile(path.join(__dirname, "../dist/index.html"));
+    } else {
+      next();
+    }
   });
 }
 
