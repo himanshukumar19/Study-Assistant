@@ -1,7 +1,6 @@
 import { ITEM_TYPES } from "../src/services/schema.js";
+import { resolveProviders, headersFor } from "./providers.js";
 
-const CEREBRAS_URL = "https://api.cerebras.ai/v1/chat/completions";
-const CEREBRAS_MODEL = "gpt-oss-120b";
 const TIMEOUT_MS = 30_000;
 
 const SYSTEM_PROMPT = `You are a study-material generator. Given user-provided notes or text, generate interactive study items.
@@ -55,53 +54,74 @@ export default async function generateHandler(req, res) {
     return res.status(400).json({ error: "Mode must be flashcards, quiz, or mixed." });
   }
 
-  const apiKey = process.env.CEREBRAS_API_KEY;
-  if (!apiKey) {
-    return res.status(500).json({ error: "Server misconfiguration: missing API key." });
+  const providers = resolveProviders();
+
+  if (providers.length === 0) {
+    return res.status(500).json({
+      error: "Server misconfiguration: no AI provider key set (GROQ_API_KEY / GROK_API_KEY / OPENROUTER_API_KEY).",
+    });
   }
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
   try {
-    const response = await fetch(CEREBRAS_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: CEREBRAS_MODEL,
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT + "\n\n" + MODE_INSTRUCTIONS[mode] },
-          { role: "user", content: text },
-        ],
-        response_format: { type: "json_object" },
-        max_completion_tokens: 8192,
-        temperature: 0.7,
-      }),
-      signal: controller.signal,
-    });
+    let lastStatus = 502;
+    let lastProvider = null;
+
+    for (const provider of providers) {
+      for (const model of provider.models) {
+        const response = await fetch(provider.url, {
+          method: "POST",
+          headers: headersFor(provider),
+          body: JSON.stringify({
+            model,
+            messages: [
+              { role: "system", content: SYSTEM_PROMPT + "\n\n" + MODE_INSTRUCTIONS[mode] },
+              { role: "user", content: text },
+            ],
+            response_format: { type: "json_object" },
+            max_tokens: 8192,
+            temperature: 0.7,
+          }),
+          signal: controller.signal,
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const content = data?.choices?.[0]?.message?.content;
+
+          if (content) {
+            clearTimeout(timeout);
+            console.log(`[generate] served by ${provider.id}/${model}`);
+            return res.json({ raw: content });
+          }
+
+          console.error(`[${provider.id}] empty response body (model=${model})`);
+          lastStatus = 502;
+          lastProvider = provider.id;
+          break;
+        }
+
+        lastStatus = response.status;
+        lastProvider = provider.id;
+        const body = await response.text();
+        console.error(`[${provider.id}] ${response.status} (model=${model}): ${body}`);
+
+        // 404 = unknown/discontinued model, 402 = no credit for this model.
+        // Anything else (401, 429, 5xx) is not fixed by switching models —
+        // move on to the next provider instead.
+        if (response.status !== 404 && response.status !== 402) break;
+      }
+    }
 
     clearTimeout(timeout);
 
-    if (!response.ok) {
-      const body = await response.text();
-      console.error(`[cerebras] ${response.status}: ${body}`);
-      return res.status(502).json({
-        error: `Upstream error (${response.status}).`,
-        upstreamStatus: response.status,
-      });
-    }
-
-    const data = await response.json();
-    const content = data?.choices?.[0]?.message?.content;
-
-    if (!content) {
-      return res.status(502).json({ error: "Empty response from provider." });
-    }
-
-    return res.json({ raw: content });
+    return res.status(502).json({
+      error: `Upstream error (${lastStatus}).`,
+      upstreamStatus: lastStatus,
+      provider: lastProvider,
+    });
   } catch (err) {
     clearTimeout(timeout);
 

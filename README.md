@@ -19,11 +19,14 @@ Requires Node.js 20+ (uses `--env-file` for `.env` loading). The app runs at `ht
 
 To test on a phone, connect both devices to the same WiFi and open the **Network** URL shown in the `npm start` output (e.g. `http://192.168.x.x:5173`).
 
-Create a `.env` file based on `.env.example` with your API key:
+Create a `.env` file based on `.env.example` with your API keys:
 
 ```
-CEREBRAS_API_KEY=your_key_here
+GROQ_API_KEY=your_key_here        # primary — Groq or xAI/Grok
+OPENROUTER_API_KEY=your_key_here  # fallback
 ```
+
+At least one key is required. The primary provider is picked from the key prefix, so a Groq key (`gsk_…`) or an xAI/Grok key (`xai-…`) both work under either `GROQ_API_KEY` or `GROK_API_KEY`. If the primary provider fails (no credits, rate limit, model unavailable), the request automatically falls through to the next provider. The backend logs which provider served each request.
 
 ## Usage
 
@@ -47,15 +50,15 @@ CEREBRAS_API_KEY=your_key_here
 │              │ ◀─────────────────────────── │                   │
 └──────────────┘     { raw: "..." }           └────────┬──────────┘
        │                                               │
-       │ validateResponse()                  fetch(CEREBRAS_URL)
+       │ validateResponse()                  fetch(OPENROUTER_URL)
        │ • extract JSON from fences          OpenAI-compat endpoint
        │ • validate against schema           response_format: json
-       │ • salvage valid items               max_completion_tokens: 8k
+       │ • salvage valid items               max_tokens: 8k
        │                                               │
        ▼                                               ▼
 ┌──────────────────┐                        ┌──────────────────┐
-│   StudyItem[]    │                        │   Cerebras API   │
-│  discriminated   │                        │  (gpt-oss-120b)  │
+│   StudyItem[]    │                        │  OpenRouter API  │
+│  discriminated   │                        │  (llama-3.3-70b) │
 │  union data      │                        │                  │
 └────────┬─────────┘                        └──────────────────┘
          │
@@ -89,7 +92,7 @@ Error codes: 9 distinct types → user-friendly messages + collapsible debug det
 - React 19 + Vite 8
 - Express backend proxy (port 3001) — routes LLM calls, holds API keys server-side
 - Plain CSS with CSS custom properties
-- Cerebras API (primary)
+- Groq or xAI/Grok as the primary provider, with OpenRouter as an automatic fallback
 - No TypeScript — JSDoc for type annotations
 
 ## AI-Usage Note
@@ -110,11 +113,11 @@ I maintained in AGENTS.md and DECISIONS.md throughout.
 ## Known Limitations
 
 - Input capped at 4,000 characters — keeps generation focused and fits
-  comfortably within Cerebras's free-tier context window
-- No Gemini fallback yet (Cerebras only) — if Cerebras is rate-limited
-  or down, generation fails rather than retrying via a second provider
-- Free-tier rate limits (5 requests/minute on Cerebras) may cause
-  delays if generating repeatedly in quick succession
+  comfortably within the model's context window
+- Provider fallback is failover-only: if every configured provider is
+  rate-limited or out of credits, generation fails with an error state
+- Free-tier rate limits on the primary provider may cause delays; the request
+  falls through to the next provider automatically
 - No dark mode
 - No save/load sessions
 - No streaming response rendering

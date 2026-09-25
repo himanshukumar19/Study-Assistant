@@ -16,7 +16,7 @@ npm run preview    # preview production build
 - **Frontend**: React 19, Vite 8, vanilla JS (no TypeScript), plain CSS
 - **No TypeScript** — use JSDoc for type annotations
 - **Backend proxy**: Express on port 3001, loaded via `node --env-file=.env backend/server.js`. Vite proxies `/api` to it in dev.
-- **AI Providers**: Cerebras API (primary, OpenAI-compatible endpoint), Google Gemini (fallback)
+- **AI Providers**: OpenRouter API (primary, OpenAI-compatible endpoint — meta-llama/llama-3.3-70b-instruct:free), Google Gemini (fallback)
 - **State**: `useReducer` for flashcard/quiz pools, `useState` for simple UI flags; no external state library
 
 ## Architecture (Non-Obvious)
@@ -48,7 +48,7 @@ API keys must never reach the browser. Route all LLM calls through a backend pro
 - Flashcard "review again" pool and Quiz "retest" pool are independent. Never merge them into one tracking structure.
 - Quiz is multiple-choice only (4 options). No free-text answer grading.
 - Once a quiz answer is selected and locked, it cannot be changed — explanation reveals only after locking.
-- AI provider: Cerebras (primary, OpenAI-compatible endpoint) with Google Gemini as fallback.
+- AI provider: OpenRouter (primary, OpenAI-compatible endpoint — meta-llama/llama-3.3-70b-instruct:free) with Google Gemini as fallback.
 - API key lives server-side only, inside `backend/`. Never in frontend code, never in the client bundle, never logged to console.
 - State management: React hooks + `useReducer` only. No Redux/Zustand/other external state library.
 - `services/schema.js` is canonical. Never redefine these types elsewhere.
@@ -96,7 +96,7 @@ src/
     errorCodes.js   # error code constants, user-friendly messages, detection helper
 backend/
   server.js         # Express server (port 3001), mounts POST /api/generate
-  generate.js       # route handler — calls Cerebras API, returns raw response
+  generate.js       # route handler — calls OpenRouter API, returns raw response
 docs/
   feature.md        # detailed feature plan & build phases — canonical spec
 ```
