@@ -6,6 +6,9 @@ AI-powered study tool that turns your notes into interactive flashcards, quizzes
 
 ## Demo
 
+<video src="https://github.com/user-attachments/assets/06bc3254-7ae8-4102-a3c2-8c6e9b48ee7e" controls width="100%"></video>
+
+
 [Watch the Study Assistant Demo](./Study-Assistant-Demo.mov)
 
 ## Setup
