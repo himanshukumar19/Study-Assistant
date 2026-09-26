@@ -44,23 +44,24 @@ At least one key is required. The primary provider is picked from the key prefix
 │   Browser   │ ───────────────────────────▶ │  Express :3001   │
 │  (Vite :5173)│                              │  (backend proxy)  │
 │              │                              │                   │
-│  TextInput   │                              │  Holds API key    │
+│  TextInput   │                              │  Holds API keys   │
 │  ModeSelector│                              │  Builds prompt    │
-│  App.jsx     │                              │  Rate-limit guard │
-│              │ ◀─────────────────────────── │                   │
-└──────────────┘     { raw: "..." }           └────────┬──────────┘
-       │                                               │
-       │ validateResponse()                  fetch(OPENROUTER_URL)
-       │ • extract JSON from fences          OpenAI-compat endpoint
-       │ • validate against schema           response_format: json
-       │ • salvage valid items               max_tokens: 8k
-       │                                               │
-       ▼                                               ▼
-┌──────────────────┐                        ┌──────────────────┐
-│   StudyItem[]    │                        │  OpenRouter API  │
-│  discriminated   │                        │  (llama-3.3-70b) │
-│  union data      │                        │                  │
-└────────┬─────────┘                        └──────────────────┘
+│  App.jsx     │                              │  Provider chain   │
+│              │ ◀─────────────────────────── │  (Groq → xAI →   │
+└──────────────┘     { raw: "..." }           │   OpenRouter)     │
+       │                                       └────────┬──────────┘
+       │ validateResponse()                            │
+       │ • extract JSON from fences           providers.js tries each
+       │ • validate against schema            in turn; picks by key prefix
+       │ • salvage valid items                (gsk_ → Groq, xai- → xAI)
+       │                                     response_format: json
+       ▼                                     max_tokens: 8k
+┌──────────────────┐                              │
+│   StudyItem[]    │                              ▼
+│  discriminated   │                  ┌────────────────────────┐
+│  union data      │                  │  OpenAI-compatible API │
+└────────┬─────────┘                  │  Groq / xAI / OpenRouter│
+                                       └────────────────────────┘
          │
          ▼
 ┌─────────────────────────────────────────────────────┐
@@ -110,6 +111,12 @@ serverless function, no AI SDK (plain fetch to OpenAI-compatible
 endpoints) — were mine; OpenCode implemented against locked constraints
 I maintained in AGENTS.md and DECISIONS.md throughout.
 
+The provider layer changed after that: the app started on Cerebras with a
+Gemini fallback, and now resolves a Groq → xAI → OpenRouter chain at
+runtime, picking the provider from the API key's prefix. I chose the
+chain-over-single-provider approach so a retired model slug or an
+exhausted free tier degrades to the next provider instead of failing.
+
 ## Known Limitations
 
 - Input capped at 4,000 characters — keeps generation focused and fits
@@ -134,7 +141,7 @@ I maintained in AGENTS.md and DECISIONS.md throughout.
 | Phase | Time | What |
 |---|---|---|
 | Scaffold + schema + env | ~45m | Vite/React setup, folder structure, `schema.js`, `.env`, AGENTS.md |
-| Backend proxy + validator | ~1.5h | Express server, Cerebras handler, `validateResponse.js` with salvage policy |
+| Backend proxy + validator | ~1.5h | Express server, provider handler, `validateResponse.js` with salvage policy |
 | State reducers + generate flow | ~1h | `useRequestLifecycle`, `useFlashcardProgress`, `useQuizProgress`, stale-response guard |
 | UI across all 3 modes | ~2h | FlashcardSection (3D flip, review-again), QuizSection (lock-in, retest), MixedSection |
 | Error/loading/empty states | ~45m | Code-specific error messages, rate-limit handling, empty states across components |
